@@ -1,0 +1,73 @@
+@reference "tailwindcss";
+
+@utility button {
+  @apply rounded-lg shadow-xs  bg-indigo-600 text-slate-100;
+  @apply text-sm font-bold;
+  @apply px-4 py-2;
+  @apply flex justify-between items-center gap-4;
+  @apply hover:bg-indigo-500 focus:bg-indigo-700;
+}
+
+.button {
+  @apply rounded-lg shadow-md bg-indigo-600 text-slate-100;
+  @apply text-sm font-bold;
+  @apply px-4 py-2;
+  @apply flex justify-between items-center gap-4;
+  @apply hover:bg-indigo-500;
+  @apply focus:bg-indigo-700;
+}
+
+.dialogWrapper {
+  @apply fixed inset-0 z-30 flex items-center justify-center w-full h-full bg-transparent backdrop:bg-transparent;
+}
+
+.backdrop {
+  @apply fixed inset-0 bg-gray-500/75;
+}
+
+.dialog {
+  /* @apply bg-white rounded-lg shadow-xl overflow-hidden max-w-lg w-full; */
+  @apply z-50 flex items-center justify-center p-4 text-left w-md;
+}
+
+.dialogPanel {
+  @apply rounded-lg shadow-lg bg-white w-full;
+}
+
+.dialogPanelContent {
+  @apply px-5 pt-5 pb-4 rounded-lg grid gap-4;
+}
+
+.dialogTitle {
+  @apply text-lg leading-none font-semibold;
+}
+
+.formControl {
+  @apply flex flex-col;
+}
+
+.label {
+  @apply flex items-center gap-2 text-sm leading-none font-medium mb-1.5;
+}
+
+.input {
+  @apply border border-gray-300 rounded-md my-2 px-3 py-2 shadow-xs text-xs;
+  @apply focus-visible:ring-indigo-100/50 focus-visible:ring-[3px] focus-visible:border-indigo-300/50;
+  @apply focus-visible:outline-indigo-300/50;
+}
+
+.dialogFooter {
+  @apply flex justify-end items-center gap-2;
+}
+
+.primary {
+  @apply button;
+  @apply font-semibold;
+  @apply border border-indigo-400;
+}
+
+.cancel {
+  @apply button;
+  @apply bg-white text-slate-900 font-normal;
+  @apply border border-slate-200;
+}
