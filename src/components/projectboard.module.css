@@ -9,7 +9,7 @@
 }
 
 .button {
-  @apply rounded-lg shadow-md bg-indigo-600 text-slate-100;
+  @apply rounded-lg shadow-md bg-indigo-400 text-gray-50;
   @apply text-sm font-bold;
   @apply px-4 py-2;
   @apply flex justify-between items-center gap-4;
