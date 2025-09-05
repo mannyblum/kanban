@@ -36,6 +36,8 @@ const Notification = ({
         handleDismiss(id);
       }, timeout);
 
+      console.log("timer", timer);
+
       return () => clearTimeout(timer);
     }
   }, []);
@@ -73,26 +75,29 @@ const NotificationsProvider: React.FC<{ children: ReactNode }> = ({
       severity: severity,
       timeout,
     };
-    console.log("notification", notification);
 
     setNotifications((prev) => [...prev, notification]);
   };
 
   const dismissNotification = (notificationId: number) => {
-    console.log("dismiss", notificationId);
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== notificationId)
+    );
   };
 
   return (
     <NotificationsContext.Provider
       value={{ notifications, addNotification, dismissNotification }}
     >
-      {notifications.map((notification) => (
-        <Notification
-          key={notification.id}
-          {...notification}
-          handleDismiss={() => dismissNotification(notification.id)}
-        />
-      ))}
+      <div className="fixed top-0 left-0 right-0 p-2 flex flex-col gap-2">
+        {notifications.map((notification) => (
+          <Notification
+            key={notification.id}
+            {...notification}
+            handleDismiss={() => dismissNotification(notification.id)}
+          />
+        ))}
+      </div>
       {children}
     </NotificationsContext.Provider>
   );

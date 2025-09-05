@@ -64,10 +64,13 @@
   @apply button;
   @apply font-semibold;
   @apply border border-indigo-400;
+  @apply cursor-pointer;
 }
 
 .cancel {
   @apply button;
   @apply bg-white text-slate-900 font-normal;
-  @apply border border-slate-200;
+  @apply border border-slate-200 hover:border-red-500;
+  @apply hover:text-red-500 hover:bg-red-100;
+  @apply cursor-pointer;
 }

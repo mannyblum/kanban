@@ -6,7 +6,7 @@ export interface Column {
 }
 
 export interface Task {
-  id: string;
+  id: number;
   columnId: string;
   title: string;
   description: string;

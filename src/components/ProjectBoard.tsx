@@ -7,19 +7,29 @@ import {
 } from "react";
 import classes from "./projectboard.module.css";
 import { createPortal } from "react-dom";
-import { addColumn, getColumns, type Column } from "../../lib/columns";
+import {
+  addColumn,
+  getColumns,
+  updateColumn,
+  type Column,
+} from "../../lib/columns";
 import { useNotifications } from "../hooks/useNotifications";
 
 import type { Notification } from "../context/notifications";
 import { Column as ProjectColumn } from "./ProjectColumns";
 
 interface ColumnModalProps {
-  handleClose: () => void;
-  handleAddColumn: (columnName: string) => void;
+  onClose: () => void;
+  onAddColumn: (columnName: string) => void;
+  onEditColumn: (column: Column) => void;
+  column?: Column | null;
 }
+
 export function ColumnModal({
-  handleClose,
-  handleAddColumn,
+  onClose,
+  onAddColumn,
+  onEditColumn,
+  column,
 }: ColumnModalProps) {
   const [columnName, setColumnName] = useState<string>("");
 
@@ -30,8 +40,23 @@ export function ColumnModal({
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    handleAddColumn(columnName);
+    if (column) {
+      const newColumn: Column = {
+        ...column,
+        title: columnName,
+      };
+
+      onEditColumn(newColumn);
+    } else {
+      onAddColumn(columnName);
+    }
   };
+
+  useEffect(() => {
+    if (column) {
+      setColumnName(column.title);
+    }
+  }, [column]);
 
   return (
     <dialog className={classes.dialogWrapper}>
@@ -39,7 +64,9 @@ export function ColumnModal({
       <div className={classes.dialog}>
         <div className={classes.dialogPanel}>
           <div className={classes.dialogPanelContent}>
-            <h3 className={classes.dialogTitle}>Add New Column</h3>
+            <h3 className={classes.dialogTitle}>
+              {column ? "Edit" : "Add New"} Column
+            </h3>
             <form onSubmit={onSubmit}>
               <div className={classes.formControl}>
                 <label htmlFor="columnTitle" className={classes.label}>
@@ -58,13 +85,13 @@ export function ColumnModal({
               <div className={classes.dialogFooter}>
                 <button
                   type="button"
-                  onClick={handleClose}
+                  onClick={onClose}
                   className={classes.cancel}
                 >
                   Cancel
                 </button>
                 <button type="submit" className={classes.primary}>
-                  Create Column
+                  {column ? "Edit" : "Add"} Column
                 </button>
               </div>
             </form>
@@ -78,6 +105,8 @@ export function ColumnModal({
 export default function ProjectBoard() {
   const [showColumnModal, setShowColumnModal] = useState<boolean>(false);
   const [columns, setColumns] = useState<Column[]>();
+
+  const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
   const { addNotification } = useNotifications();
 
@@ -97,7 +126,7 @@ export default function ProjectBoard() {
     gColumns();
   }, []);
 
-  const onAddColumn = async (columnName: string) => {
+  const handleAddColumn = async (columnName: string) => {
     const response = await addColumn({
       id: new Date().getTime(),
       title: columnName,
@@ -112,11 +141,48 @@ export default function ProjectBoard() {
       };
 
       addNotification(noti);
+      setShowColumnModal(false);
     }
   };
 
-  const onClose = () => {
+  const editColumn = (column: Column) => {
+    if (column) {
+      setActiveColumn(column);
+    }
+  };
+
+  useEffect(() => {
+    if (activeColumn) {
+      setShowColumnModal(true);
+    }
+  }, [activeColumn]);
+
+  const handleEditColumn = async (newColumn: Column) => {
+    if (newColumn) {
+      const response = await updateColumn(newColumn);
+
+      if (response) {
+        setColumns((prevColumns) =>
+          prevColumns?.map((col) => (col.id === response.id ? response : col))
+        );
+
+        const noti: Notification = {
+          id: response.id,
+          message: `Successfully edited Column`,
+          severity: "success",
+        };
+
+        addNotification(noti);
+        setShowColumnModal(false);
+      }
+    }
+  };
+
+  // const handleDeleteColumn = async (columnId: string) => {};
+
+  const handleClose = () => {
     setShowColumnModal(false);
+    setActiveColumn(null);
   };
 
   if (!columns) return;
@@ -132,13 +198,26 @@ export default function ProjectBoard() {
       </div>
       <div className="flex gap-4">
         {columns.map((column) => {
-          return <ProjectColumn column={column} />;
+          return (
+            <ProjectColumn
+              key={column.id}
+              column={column}
+              onEdit={editColumn}
+              onDelete={() => {}}
+              // onDelete={handleDeleteColumn}
+            />
+          );
         })}
       </div>
       {showColumnModal &&
         portalRef.current &&
         createPortal(
-          <ColumnModal handleClose={onClose} handleAddColumn={onAddColumn} />,
+          <ColumnModal
+            column={activeColumn}
+            onClose={handleClose}
+            onAddColumn={handleAddColumn}
+            onEditColumn={handleEditColumn}
+          />,
           portalRef.current
         )}
     </section>

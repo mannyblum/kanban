@@ -2,13 +2,24 @@ import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FaEllipsisVertical } from "react-icons/fa6";
 
 import type { Column as ColumnProps } from "../../../lib/columns";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useOnClickOutside } from "usehooks-ts";
 
-const Column: React.FC<{ column: ColumnProps }> = ({ column }) => {
+interface ColumnPropsPlus {
+  column: ColumnProps;
+  onEdit: (column: ColumnProps) => void;
+  onDelete: (column: ColumnProps) => void;
+}
+
+const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   const [isMenuOpen, setOpenMenu] = useState<boolean>(false);
 
+  const ref = useRef<HTMLDivElement>(null!);
+
+  useOnClickOutside(ref, () => setOpenMenu(false));
+
   return (
-    <div className="grow bg-gray-200 rounded-md p-4" key={column.id}>
+    <div ref={ref} className="grow bg-gray-200 rounded-md p-4" key={column.id}>
       <div className="flex flex-row justify-between items-center gap-1">
         <h3 className="font-semibold text-gray-900">{column.title}</h3>
         <div className="text-xs border border-gray-300 flex justify-center items-center h-5 w-5 p-0 rounded-sm">
@@ -18,18 +29,23 @@ const Column: React.FC<{ column: ColumnProps }> = ({ column }) => {
         <div className="grow" />
         <div className="relative ">
           <div
-            onMouseLeave={() => setOpenMenu(false)}
             className={`flex flex-row bg-gray-300 gap-2 rounded-sm ${
               isMenuOpen
                 ? "absolute top-0 right-0 visible block"
                 : "invisible hidden"
             }`}
           >
-            <button className="flex justify-center items-center transition-colors delay-75 duration-150 ease-in-out bg:transparent hover:bg-indigo-400 hover:text-gray-50 font-medium p-0 h-7 w-7 text-sm rounded-md cursor-pointer ">
+            <button
+              onClick={() => onEdit(column)}
+              className="flex justify-center items-center transition-colors delay-75 duration-150 ease-in-out bg:transparent hover:bg-indigo-400 hover:text-gray-50 font-medium p-0 h-7 w-7 text-sm rounded-md cursor-pointer "
+            >
               <FaRegEdit />
             </button>
 
-            <button className="flex justify-center items-center transition-colors delay-75 duration-150 ease-in-out bg:transparent hover:bg-red-400 text-red-500 hover:text-gray-50 font-medium p-0 h-7 w-7 text-sm rounded-md cursor-pointer ">
+            <button
+              onClick={() => onDelete(column)}
+              className="flex justify-center items-center transition-colors delay-75 duration-150 ease-in-out bg:transparent hover:bg-red-400 text-red-500 hover:text-gray-50 font-medium p-0 h-7 w-7 text-sm rounded-md cursor-pointer "
+            >
               <FaRegTrashAlt />
             </button>
           </div>
