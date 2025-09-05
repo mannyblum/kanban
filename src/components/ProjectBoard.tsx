@@ -11,6 +11,7 @@ import { addColumn, getColumns, type Column } from "../../lib/columns";
 import { useNotifications } from "../hooks/useNotifications";
 
 import type { Notification } from "../context/notifications";
+import { Column as ProjectColumn } from "./ProjectColumns";
 
 interface ColumnModalProps {
   handleClose: () => void;
@@ -131,23 +132,7 @@ export default function ProjectBoard() {
       </div>
       <div className="flex gap-4">
         {columns.map((column) => {
-          return (
-            <div className="grow bg-gray-200 rounded-md p-4" key={column.id}>
-              <div className="flex flex-row justify-between items-center">
-                <h3 className="font-semibold text-gray-900 mr-2">
-                  {column.title}
-                </h3>
-                <div className="text-xs border border-gray-300 flex justify-center items-center h-5 w-5 p-0 rounded-sm">
-                  2
-                </div>
-
-                <div className="grow" />
-                <button className="transition-colors delay-75 duration-150 ease-in-out bg:transparent hover:bg-indigo-400 hover:text-gray-50 font-medium p-0 h-7 w-7 text-sm rounded-md cursor-pointer ">
-                  +
-                </button>
-              </div>
-            </div>
-          );
+          return <ProjectColumn column={column} />;
         })}
       </div>
       {showColumnModal &&
