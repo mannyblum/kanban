@@ -11,12 +11,14 @@ import {
   addColumn,
   getColumns,
   updateColumn,
+  deleteColumn,
   type Column,
 } from "../../lib/columns";
 import { useNotifications } from "../hooks/useNotifications";
 
 import type { Notification } from "../context/notifications";
 import { Column as ProjectColumn } from "./ProjectColumns";
+import useConfirm from "../hooks/useConfirm";
 
 interface ColumnModalProps {
   onClose: () => void;
@@ -106,6 +108,9 @@ export default function ProjectBoard() {
   const [showColumnModal, setShowColumnModal] = useState<boolean>(false);
   const [columns, setColumns] = useState<Column[]>();
 
+  const [isEditing, setEditing] = useState<boolean>(false);
+  const [isDeleting, setDeleting] = useState<boolean>(false);
+
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
   const { addNotification } = useNotifications();
@@ -148,14 +153,31 @@ export default function ProjectBoard() {
   const editColumn = (column: Column) => {
     if (column) {
       setActiveColumn(column);
+      setEditing(true);
     }
   };
 
+  const removeColumn = (column: Column) => {
+    if (column) {
+      setActiveColumn(column);
+      setDeleting(true);
+    }
+  };
+
+  const { ConfirmDeleteDialog, confirm } = useConfirm(
+    "Remove Column",
+    "Are you sure you want to delete this column?"
+  );
+
   useEffect(() => {
-    if (activeColumn) {
+    if (activeColumn && isEditing) {
       setShowColumnModal(true);
     }
-  }, [activeColumn]);
+
+    if (activeColumn && isDeleting) {
+      handleDeleteColumn(activeColumn);
+    }
+  }, [activeColumn, isEditing, isDeleting]);
 
   const handleEditColumn = async (newColumn: Column) => {
     if (newColumn) {
@@ -174,11 +196,41 @@ export default function ProjectBoard() {
 
         addNotification(noti);
         setShowColumnModal(false);
+        setEditing(false);
       }
     }
   };
 
-  // const handleDeleteColumn = async (columnId: string) => {};
+  const handleDeleteColumn = async (column: Column) => {
+    const answer = await confirm();
+
+    if (answer) {
+      const response = await deleteColumn(column.id);
+
+      if (response) {
+        setColumns((prevColumns) =>
+          prevColumns?.filter((col) => col.id !== column.id)
+        );
+        const noti: Notification = {
+          id: response.id,
+          message: "Successfully deleted Column",
+          severity: "success",
+        };
+
+        addNotification(noti);
+      } else {
+        const noti: Notification = {
+          id: new Date().getTime(),
+          message: "Something went wrong",
+          severity: "error",
+        };
+
+        addNotification(noti);
+      }
+    }
+
+    setDeleting(false);
+  };
 
   const handleClose = () => {
     setShowColumnModal(false);
@@ -203,8 +255,7 @@ export default function ProjectBoard() {
               key={column.id}
               column={column}
               onEdit={editColumn}
-              onDelete={() => {}}
-              // onDelete={handleDeleteColumn}
+              onDelete={removeColumn}
             />
           );
         })}
@@ -220,6 +271,7 @@ export default function ProjectBoard() {
           />,
           portalRef.current
         )}
+      {isDeleting && <ConfirmDeleteDialog />}
     </section>
   );
 }

@@ -51,7 +51,7 @@ export async function updateColumn(column: Column): Promise<Column> {
   });
 }
 
-export async function deleteColumn(id: string): Promise<void> {
+export async function deleteColumn(id: number): Promise<{ id: number }> {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(Stores.Columns, "readwrite");
@@ -59,7 +59,7 @@ export async function deleteColumn(id: string): Promise<void> {
 
     const request = store.delete(id);
 
-    request.onsuccess = () => resolve();
+    request.onsuccess = () => resolve({ id });
     request.onerror = () => reject(request.error);
   });
 }
