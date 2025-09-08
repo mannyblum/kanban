@@ -10,6 +10,10 @@ export interface Task {
   columnId: string;
   title: string;
   description: string;
+  assignee: string;
+  dueDate: Date;
+  priority: "High" | "Medium" | "Low";
+  tags: string[];
   order: number;
 }
 
