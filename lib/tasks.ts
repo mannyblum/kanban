@@ -8,9 +8,10 @@ export async function addTask(task: Task): Promise<Task> {
     const tx = db.transaction(Stores.Tasks, "readwrite");
     const store = tx.objectStore(Stores.Tasks);
 
-    const request = store.add(task);
+    const t = { ...task, id: new Date().getTime() };
+    const request = store.add(t);
 
-    request.onsuccess = () => resolve(task);
+    request.onsuccess = () => resolve(t);
     request.onerror = () => reject(request.error);
   });
 }
@@ -24,11 +25,14 @@ export async function getTasksByColumnId(columnId: number): Promise<Task[]> {
 
     const request = store.getAll();
 
-    const columnTasks = request.result.filter((t) => {
-      return t.columnId !== columnId;
-    });
+    request.onsuccess = (event: Event) => {
+      const db = (event.target as IDBRequest).result;
+      const columnTasks = db.filter((task: Task) => {
+        return task.columnId !== columnId;
+      });
 
-    request.onsuccess = () => resolve(columnTasks);
+      return resolve(columnTasks);
+    };
     request.onerror = () => reject(request.error);
   });
 }

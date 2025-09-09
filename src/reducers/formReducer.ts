@@ -1,0 +1,48 @@
+import type { Task as FormState } from "../../lib/columns";
+
+type FormAction =
+  | { type: "CHANGE_TITLE"; payload: string }
+  | { type: "CHANGE_DESC"; payload: string }
+  | { type: "CHANGE_ASSIGNEE"; payload: string }
+  | { type: "CHANGE_DUEDATE"; payload: string }
+  | { type: "CHANGE_PRIORITY"; payload: string }
+  | { type: "CHANGE_TAGS"; payload: string }
+  | { type: "RESET_FORM" };
+
+export const initialFormState: FormState = {
+  id: new Date().getTime(),
+  columnId: -1,
+  title: "",
+  description: "",
+  assignee: "",
+  // dueDate: new Date(),
+  dueDate: "",
+  tags: "",
+  priority: "Low",
+};
+
+export const formReducer = (
+  state: FormState,
+  action: FormAction
+): FormState => {
+  console.log("state", state);
+  console.log("action", action);
+  switch (action.type) {
+    case "CHANGE_TITLE":
+      return { ...state, title: action.payload };
+    case "CHANGE_DESC":
+      return { ...state, description: action.payload };
+    case "CHANGE_ASSIGNEE":
+      return { ...state, assignee: action.payload };
+    case "CHANGE_DUEDATE":
+      return { ...state, dueDate: action.payload };
+    case "CHANGE_PRIORITY":
+      return { ...state, priority: action.payload };
+    case "CHANGE_TAGS":
+      return { ...state, tags: action.payload };
+    case "RESET_FORM":
+      return initialFormState;
+    default:
+      return state;
+  }
+};

@@ -6,15 +6,18 @@
   @apply px-4 py-2;
   @apply flex justify-between items-center gap-4;
   @apply hover:bg-indigo-500 focus:bg-indigo-700;
+  @apply hover:bg-indigo-500;
+  @apply focus:bg-indigo-700;
 }
 
 .button {
-  @apply rounded-lg shadow-md bg-indigo-400 text-gray-50;
+  @apply button;
+  /* @apply rounded-lg shadow-md bg-indigo-400 text-gray-50;
   @apply text-sm font-bold;
   @apply px-4 py-2;
   @apply flex justify-between items-center gap-4;
   @apply hover:bg-indigo-500;
-  @apply focus:bg-indigo-700;
+  @apply focus:bg-indigo-700; */
 }
 
 .dialogWrapper {
@@ -44,14 +47,31 @@
 
 .formControl {
   @apply flex flex-col;
+  @apply mb-4;
 }
 
 .label {
-  @apply flex items-center gap-2 text-sm leading-none font-medium mb-1.5;
+  @apply flex items-center gap-2 text-sm leading-none font-medium mb-0.5;
 }
 
 .input {
-  @apply border border-gray-300 rounded-md my-2 px-3 py-2 shadow-xs text-xs;
+  @apply border border-gray-300 rounded-md mt-1.5 mb-2 px-3 py-2 shadow-xs text-xs;
+  @apply focus-visible:ring-indigo-100/50 focus-visible:ring-[3px] focus-visible:border-indigo-300/50;
+  @apply focus-visible:outline-indigo-300/50;
+}
+
+.select {
+  @apply appearance-none;
+  @apply border border-gray-300 rounded-md mt-1.5 mb-2 pl-2 pr-2 py-2 shadow-xs text-xs;
+  @apply focus-visible:ring-indigo-100/50 focus-visible:ring-[3px] focus-visible:border-indigo-300/50;
+  @apply focus-visible:outline-indigo-300/50;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAUCAMAAACtdX32AAAAdVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhMdQaAAAAJ3RSTlMAAAECAwQGBwsOFBwkJTg5RUZ4eYCHkJefpaytrsXGy8zW3+Do8vNn0bsyAAAAYElEQVR42tXROwJDQAAA0Ymw1p9kiT+L5P5HVEi3qJn2lcPjtIuzUIJ/rhIGy762N3XaThqMN1ZPALsZPEzG1x8LrFL77DHBnEMxBewz0fJ6LyFHTPL7xhwzWYrJ9z22AqmQBV757MHfAAAAAElFTkSuQmCC);
+  background-position: 100%;
+  background-repeat: no-repeat;
+}
+
+.textarea {
+  @apply border border-gray-300 rounded-md mt-1.5 mb-2 px-3 py-2 shadow-xs text-xs;
   @apply focus-visible:ring-indigo-100/50 focus-visible:ring-[3px] focus-visible:border-indigo-300/50;
   @apply focus-visible:outline-indigo-300/50;
 }
@@ -65,6 +85,7 @@
   @apply font-semibold;
   @apply border border-indigo-400;
   @apply cursor-pointer;
+  @apply disabled:cursor-not-allowed disabled:bg-slate-500/50 border-none;
 }
 
 .cancel {

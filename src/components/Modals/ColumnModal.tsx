@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 
-import classes from "../../components/projectboard.module.css";
+import classes from "../../components/ProjectBoard/projectboard.module.css";
 
 import { type Column } from "../../../lib/columns";
 
@@ -59,6 +59,7 @@ export default function ColumnModal({
                   Column Title
                 </label>
                 <input
+                  autoFocus
                   type="text"
                   id="columnTitle"
                   name="columnTitle"

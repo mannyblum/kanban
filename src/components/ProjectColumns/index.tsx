@@ -1,9 +1,16 @@
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FaEllipsisVertical } from "react-icons/fa6";
 
-import type { Column as ColumnProps } from "../../../lib/columns";
-import { useRef, useState } from "react";
+import type { Column as ColumnProps, Task } from "../../../lib/columns";
+import { useEffect, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
+import TaskModal from "../Modals/TaskModal";
+
+import { addTask, getTasksByColumnId } from "../../../lib/tasks";
+
+import { useNotifications } from "../../hooks/useNotifications";
+import type { Notification } from "../../context/notifications";
+import ProjectCard from "../ProjectCards";
 
 interface ColumnPropsPlus {
   column: ColumnProps;
@@ -12,19 +19,66 @@ interface ColumnPropsPlus {
 }
 
 const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [isMenuOpen, setOpenMenu] = useState<boolean>(false);
+  const [taskModalOpen, setTaskModalOpen] = useState<boolean>(false);
 
   const ref = useRef<HTMLDivElement>(null!);
 
+  const { addNotification } = useNotifications();
+
   useOnClickOutside(ref, () => setOpenMenu(false));
 
+  useEffect(() => {
+    console.log("getTasks");
+    const gTasks = async () => {
+      const tasks = await getTasksByColumnId(column.id);
+
+      setTasks(tasks);
+    };
+
+    gTasks();
+  }, []);
+
+  const openTaskModal = () => {
+    setTaskModalOpen(true);
+  };
+
+  const closeTaskModal = () => {
+    setTaskModalOpen(false);
+  };
+
+  const handleAddTask = async (task: Task) => {
+    const t = { ...task, columnId: column.id, id: new Date().getTime() };
+    const response = await addTask(t);
+
+    if (response) {
+      const noti: Notification = {
+        id: response.id,
+        message: `Successfully added ${response.title} to the board`,
+        severity: "info",
+      };
+
+      setTasks([...tasks, t]);
+
+      addNotification(noti);
+      closeTaskModal();
+    }
+  };
+
   return (
-    <div ref={ref} className="grow bg-gray-200 rounded-md p-4" key={column.id}>
-      <div className="flex flex-row justify-between items-center gap-1">
-        <h3 className="font-semibold text-gray-900">{column.title}</h3>
-        <div className="text-xs border border-gray-300 flex justify-center items-center h-5 w-5 p-0 rounded-sm">
-          2
-        </div>
+    <div
+      ref={ref}
+      className="flex flex-col items-stretch h-full grow bg-gray-200 rounded-md p-4"
+      key={column.id}
+    >
+      <div className="mb-8 flex flex-row justify-between items-center gap-1">
+        <h3 className="font-semibold mr-2 text-gray-900">{column.title}</h3>
+        {tasks.length > 0 && (
+          <div className="text-xs border border-gray-300 flex justify-center items-center h-5 w-5 p-0 rounded-sm">
+            {tasks.length}
+          </div>
+        )}
 
         <div className="grow" />
         <div className="relative ">
@@ -61,6 +115,32 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
           </div>
         </div>
       </div>
+      <div className="grow">
+        {tasks.length > 0 &&
+          tasks.map((task) => <ProjectCard task={task} key={task.id} />)}
+        {/* tasks?.map((task) => {
+             return (
+               <div key={task.id} className="">
+                 {task.title}
+               </div>
+             );
+           })} */}
+      </div>
+      <div className="">
+        <button
+          onClick={openTaskModal}
+          className="bg-transparent hover:bg-white cursor-pointer border-dotted border-2 w-full py-2 rounded-md mt-4 text-sm border-slate-300 hover:border-slate-500 text-slate-500 flex justify-center items-center"
+        >
+          + Add Task
+        </button>
+      </div>
+      {taskModalOpen && (
+        <TaskModal
+          onClose={closeTaskModal}
+          onAddTask={handleAddTask}
+          onEditTask={() => {}}
+        />
+      )}
     </div>
   );
 };

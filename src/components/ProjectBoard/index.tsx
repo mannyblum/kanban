@@ -7,19 +7,19 @@ import {
   updateColumn,
   deleteColumn,
   type Column,
-} from "../../lib/columns";
+} from "../../../lib/columns";
 
-import { useNotifications } from "../hooks/useNotifications";
-import type { Notification } from "../context/notifications";
+import { useNotifications } from "../../hooks/useNotifications";
+import type { Notification } from "../../context/notifications";
 
-import useConfirm from "../hooks/useConfirm";
+import useConfirm from "../../hooks/useConfirm";
 
-import ColumnModal from "./Modals/ColumnModal";
-import { Column as ProjectColumn } from "./ProjectColumns";
+import ColumnModal from "../Modals/ColumnModal";
+import { Column as ProjectColumn } from "../ProjectColumns";
 
 export default function ProjectBoard() {
   const [showColumnModal, setShowColumnModal] = useState<boolean>(false);
-  const [columns, setColumns] = useState<Column[]>();
+  const [columns, setColumns] = useState<Column[]>([]);
 
   const [isEditing, setEditing] = useState<boolean>(false);
   const [isDeleting, setDeleting] = useState<boolean>(false);
@@ -45,11 +45,13 @@ export default function ProjectBoard() {
   }, []);
 
   const handleAddColumn = async (columnName: string) => {
-    const response = await addColumn({
+    const newColumn = {
       id: new Date().getTime(),
       title: columnName,
       order: 0,
-    });
+    };
+
+    const response = await addColumn(newColumn);
 
     if (response) {
       const noti: Notification = {
@@ -57,6 +59,8 @@ export default function ProjectBoard() {
         message: `Successfully added ${response.title} to the board`,
         severity: "info",
       };
+
+      setColumns([...columns, newColumn]);
 
       addNotification(noti);
       setShowColumnModal(false);
@@ -161,7 +165,7 @@ export default function ProjectBoard() {
           <span>Add Column</span>
         </button>
       </div>
-      <div className="flex gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {columns.map((column) => {
           return (
             <ProjectColumn

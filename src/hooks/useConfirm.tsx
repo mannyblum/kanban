@@ -1,5 +1,5 @@
 import { useState } from "react";
-import classes from "../components/projectboard.module.css";
+import classes from "../components/ProjectBoard/projectboard.module.css";
 
 const useConfirm = (title: string, message: string) => {
   const [promise, setPromise] = useState<{

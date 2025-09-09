@@ -7,14 +7,16 @@ export interface Column {
 
 export interface Task {
   id: number;
-  columnId: string;
+  columnId: number;
   title: string;
   description: string;
   assignee: string;
-  dueDate: Date;
-  priority: "High" | "Medium" | "Low";
-  tags: string[];
-  order: number;
+  // dueDate: Date;
+  // priority: "High" | "Medium" | "Low";
+  dueDate: string;
+  priority: string;
+  tags?: string[] | string;
+  order?: number;
 }
 
 export async function addColumn(column: Column): Promise<Column> {
