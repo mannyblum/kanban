@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import TaskModal from "../Modals/TaskModal";
 
-import { addTask, getTasksByColumnId } from "../../../lib/tasks";
+import { addTask, getTasksByColumnId, updateTask } from "../../../lib/tasks";
 
 import { useNotifications } from "../../hooks/useNotifications";
 import type { Notification } from "../../context/notifications";
@@ -20,8 +20,15 @@ interface ColumnPropsPlus {
 
 const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeTask, setActiveTask] = useState<Task>();
   const [isMenuOpen, setOpenMenu] = useState<boolean>(false);
   const [taskModalOpen, setTaskModalOpen] = useState<boolean>(false);
+
+  const [isEditing, setEditing] = useState<boolean>(false);
+  const [isDeleting, setDeleting] = useState<boolean>(false);
+
+  console.log("columnId", column.id);
+  console.log("tasks", tasks);
 
   const ref = useRef<HTMLDivElement>(null!);
 
@@ -30,7 +37,6 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   useOnClickOutside(ref, () => setOpenMenu(false));
 
   useEffect(() => {
-    console.log("getTasks");
     const gTasks = async () => {
       const tasks = await getTasksByColumnId(column.id);
 
@@ -65,6 +71,36 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
       closeTaskModal();
     }
   };
+
+  const editTask = (task: Task) => {
+    if (task) {
+      setActiveTask(task);
+      openTaskModal();
+      setEditing(true);
+    }
+  };
+
+  const deleteTask = () => {
+    console.log("delete");
+  };
+
+  const handleEditTask = async (task: Task) => {
+    const response = await updateTask(task);
+
+    if (response) {
+      const noti: Notification = {
+        id: response.id,
+        message: `Successfully edited Task`,
+        severity: "success",
+      };
+
+      addNotification(noti);
+      closeTaskModal();
+      setEditing(false);
+    }
+  };
+
+  const handleDeleteTask = () => {};
 
   return (
     <div
@@ -117,7 +153,14 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
       </div>
       <div className="grow">
         {tasks.length > 0 &&
-          tasks.map((task) => <ProjectCard task={task} key={task.id} />)}
+          tasks.map((task) => (
+            <ProjectCard
+              onEdit={editTask}
+              onDelete={deleteTask}
+              task={task}
+              key={task.id}
+            />
+          ))}
         {/* tasks?.map((task) => {
              return (
                <div key={task.id} className="">
@@ -136,9 +179,10 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
       </div>
       {taskModalOpen && (
         <TaskModal
+          task={activeTask}
           onClose={closeTaskModal}
           onAddTask={handleAddTask}
-          onEditTask={() => {}}
+          onEditTask={handleEditTask}
         />
       )}
     </div>

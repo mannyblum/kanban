@@ -1,4 +1,4 @@
-import { useReducer, type FormEvent } from "react";
+import { useEffect, useReducer, type FormEvent } from "react";
 import type { Task } from "../../../lib/columns";
 
 import classes from "../../components/ProjectBoard/projectboard.module.css";
@@ -21,8 +21,19 @@ export default function TaskModal({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onAddTask(state);
+
+    if (task) {
+      onEditTask(task);
+    } else {
+      onAddTask(state);
+    }
   };
+
+  useEffect(() => {
+    if (task) {
+      dispatch({ type: "SET_TASK", payload: task });
+    }
+  }, [task]);
 
   return (
     <dialog className={classes.dialogWrapper}>
@@ -149,7 +160,7 @@ export default function TaskModal({
                   onChange={(e) =>
                     dispatch({ type: "CHANGE_TAGS", payload: e.target.value })
                   }
-                  value={state.title}
+                  value={state.tags}
                   className={classes.input}
                   placeholder="Enter tags..."
                 />

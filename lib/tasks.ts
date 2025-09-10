@@ -16,6 +16,20 @@ export async function addTask(task: Task): Promise<Task> {
   });
 }
 
+export async function updateTask(task: Task): Promise<Task> {
+  const db = await initDB();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(Stores.Tasks, "readwrite");
+    const store = tx.objectStore(Stores.Tasks);
+
+    const request = store.put(task);
+
+    request.onsuccess = () => resolve(task);
+    request.onerror = () => reject(request.error);
+  });
+}
+
 export async function getTasksByColumnId(columnId: number): Promise<Task[]> {
   const db = await initDB();
 
@@ -28,7 +42,7 @@ export async function getTasksByColumnId(columnId: number): Promise<Task[]> {
     request.onsuccess = (event: Event) => {
       const db = (event.target as IDBRequest).result;
       const columnTasks = db.filter((task: Task) => {
-        return task.columnId !== columnId;
+        return task.columnId === columnId;
       });
 
       return resolve(columnTasks);

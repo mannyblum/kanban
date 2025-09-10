@@ -1,4 +1,4 @@
-import type { Task as FormState } from "../../lib/columns";
+import type { Task as FormState, Task } from "../../lib/columns";
 
 type FormAction =
   | { type: "CHANGE_TITLE"; payload: string }
@@ -7,6 +7,7 @@ type FormAction =
   | { type: "CHANGE_DUEDATE"; payload: string }
   | { type: "CHANGE_PRIORITY"; payload: string }
   | { type: "CHANGE_TAGS"; payload: string }
+  | { type: "SET_TASK"; payload: Task }
   | { type: "RESET_FORM" };
 
 export const initialFormState: FormState = {
@@ -40,6 +41,8 @@ export const formReducer = (
       return { ...state, priority: action.payload };
     case "CHANGE_TAGS":
       return { ...state, tags: action.payload };
+    case "SET_TASK":
+      return { ...action.payload };
     case "RESET_FORM":
       return initialFormState;
     default:

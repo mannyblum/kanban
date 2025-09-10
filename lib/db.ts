@@ -4,6 +4,8 @@ const DB_VERSION = 1;
 export const Stores = {
   Columns: "columns",
   Tasks: "tasks",
+  Users: "users",
+  Tags: "tags",
 } as const;
 
 let db: IDBDatabase;
@@ -21,6 +23,14 @@ export function initDB(): Promise<IDBDatabase> {
 
       if (!db.objectStoreNames.contains(Stores.Tasks)) {
         db.createObjectStore(Stores.Tasks, { keyPath: "id" });
+      }
+
+      if (!db.objectStoreNames.contains(Stores.Users)) {
+        db.createObjectStore(Stores.Users, { keyPath: "id" });
+      }
+
+      if (!db.objectStoreNames.contains(Stores.Tags)) {
+        db.createObjectStore(Stores.Tags, { keyPath: "id" });
       }
     };
 
