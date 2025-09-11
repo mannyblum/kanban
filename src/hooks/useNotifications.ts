@@ -16,7 +16,6 @@ export const useNotifications = () => {
   const { addNotification } = ctx;
 
   const addNoti = (notification: Notification) => {
-    console.log("notification", notification);
     addNotification(notification);
   };
 

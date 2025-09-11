@@ -30,6 +30,19 @@ export async function updateTask(task: Task): Promise<Task> {
   });
 }
 
+export async function deleteTask(id: number): Promise<{ id: number }> {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(Stores.Tasks, "readwrite");
+    const store = tx.objectStore(Stores.Tasks);
+
+    const request = store.delete(id);
+
+    request.onsuccess = () => resolve({ id });
+    request.onerror = () => reject(request.error);
+  });
+}
+
 export async function getTasksByColumnId(columnId: number): Promise<Task[]> {
   const db = await initDB();
 

@@ -2,15 +2,22 @@ import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FaEllipsisVertical } from "react-icons/fa6";
 
 import type { Column as ColumnProps, Task } from "../../../lib/columns";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import TaskModal from "../Modals/TaskModal";
 
-import { addTask, getTasksByColumnId, updateTask } from "../../../lib/tasks";
+import {
+  addTask,
+  deleteTask,
+  getTasksByColumnId,
+  updateTask,
+} from "../../../lib/tasks";
 
 import { useNotifications } from "../../hooks/useNotifications";
 import type { Notification } from "../../context/notifications";
 import ProjectCard from "../ProjectCards";
+import useConfirm from "../../hooks/useConfirm";
+import { createPortal } from "react-dom";
 
 interface ColumnPropsPlus {
   column: ColumnProps;
@@ -18,17 +25,16 @@ interface ColumnPropsPlus {
   onDelete: (column: ColumnProps) => void;
 }
 
-const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
+const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [activeTask, setActiveTask] = useState<Task>();
+  const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isMenuOpen, setOpenMenu] = useState<boolean>(false);
   const [taskModalOpen, setTaskModalOpen] = useState<boolean>(false);
 
+  const portalRef = useRef<HTMLDivElement>(null);
+
   const [isEditing, setEditing] = useState<boolean>(false);
   const [isDeleting, setDeleting] = useState<boolean>(false);
-
-  console.log("columnId", column.id);
-  console.log("tasks", tasks);
 
   const ref = useRef<HTMLDivElement>(null!);
 
@@ -80,8 +86,57 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
     }
   };
 
-  const deleteTask = () => {
-    console.log("delete");
+  const removeTask = (task: Task) => {
+    if (task) {
+      setActiveTask(task);
+      setDeleting(true);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTask && isEditing) {
+      openTaskModal();
+    }
+
+    if (activeTask && isDeleting) {
+      handleDeleteTask(activeTask);
+    }
+  }, [activeTask, isEditing, isDeleting]);
+
+  const { ConfirmDeleteDialog, confirm } = useConfirm(
+    "Remove Task",
+    "Are you sure you want to delete this Task?"
+  );
+
+  const handleDeleteTask = async (task: Task) => {
+    const answer = await confirm();
+
+    if (answer) {
+      const response = await deleteTask(task.id);
+
+      if (response) {
+        setTasks((prevTasks) => prevTasks?.filter((t) => task.id !== t.id));
+
+        const noti: Notification = {
+          id: response.id,
+          message: "Successfully deleted Task",
+          severity: "success",
+        };
+
+        addNotification(noti);
+      } else {
+        const noti: Notification = {
+          id: new Date().getTime(),
+          message: "Something went wrong",
+          severity: "error",
+        };
+
+        addNotification(noti);
+      }
+    }
+
+    setDeleting(false);
+    setActiveTask(null);
   };
 
   const handleEditTask = async (task: Task) => {
@@ -99,8 +154,6 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
       setEditing(false);
     }
   };
-
-  const handleDeleteTask = () => {};
 
   return (
     <div
@@ -156,18 +209,11 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
           tasks.map((task) => (
             <ProjectCard
               onEdit={editTask}
-              onDelete={deleteTask}
+              onDelete={removeTask}
               task={task}
               key={task.id}
             />
           ))}
-        {/* tasks?.map((task) => {
-             return (
-               <div key={task.id} className="">
-                 {task.title}
-               </div>
-             );
-           })} */}
       </div>
       <div className="">
         <button
@@ -177,16 +223,20 @@ const Column = ({ column, onEdit, onDelete }: ColumnPropsPlus) => {
           + Add Task
         </button>
       </div>
-      {taskModalOpen && (
-        <TaskModal
-          task={activeTask}
-          onClose={closeTaskModal}
-          onAddTask={handleAddTask}
-          onEditTask={handleEditTask}
-        />
-      )}
+      {taskModalOpen &&
+        ref.current &&
+        createPortal(
+          <TaskModal
+            task={activeTask}
+            onClose={closeTaskModal}
+            onAddTask={handleAddTask}
+            onEditTask={handleEditTask}
+          />,
+          ref.current
+        )}
+      {isDeleting && <ConfirmDeleteDialog />}
     </div>
   );
-};
+});
 
 export { Column };

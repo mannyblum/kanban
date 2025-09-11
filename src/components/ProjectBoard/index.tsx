@@ -154,7 +154,7 @@ export default function ProjectBoard() {
     setActiveColumn(null);
   };
 
-  if (!columns) return;
+  if (columns.length === 0) return;
 
   return (
     <section ref={portalRef}>

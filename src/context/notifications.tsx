@@ -36,8 +36,6 @@ const Notification = ({
         handleDismiss(id);
       }, timeout);
 
-      console.log("timer", timer);
-
       return () => clearTimeout(timer);
     }
   }, []);

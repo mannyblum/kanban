@@ -26,8 +26,6 @@ export const formReducer = (
   state: FormState,
   action: FormAction
 ): FormState => {
-  console.log("state", state);
-  console.log("action", action);
   switch (action.type) {
     case "CHANGE_TITLE":
       return { ...state, title: action.payload };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import type { Task } from "../../../lib/columns";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { FaRegCalendar, FaRegUser } from "react-icons/fa6";
@@ -9,7 +9,7 @@ type ProjectCardProps = {
   onDelete: (task: Task) => void;
 };
 
-export default function ProjectCard({
+export default memo(function ProjectCard({
   task,
   onEdit,
   onDelete,
@@ -65,4 +65,4 @@ export default function ProjectCard({
       </div>
     </div>
   );
-}
+});
