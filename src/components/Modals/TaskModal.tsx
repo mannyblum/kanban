@@ -1,8 +1,10 @@
-import { useEffect, useReducer, type FormEvent } from "react";
+import { useEffect, useReducer, useState, type FormEvent } from "react";
 import type { Task } from "../../../lib/columns";
 
 import classes from "../../components/ProjectBoard/projectboard.module.css";
 import { formReducer, initialFormState } from "../../reducers/formReducer";
+import { getUsers, type User } from "../../../lib/users";
+import useAutoComplete from "../../hooks/useAutoComplete";
 
 interface TaskModalProps {
   onClose: () => void;
@@ -19,6 +21,27 @@ export default function TaskModal({
 }: TaskModalProps) {
   const [state, dispatch] = useReducer(formReducer, initialFormState);
 
+  const [users, setUsers] = useState<User[] | null>(null);
+
+  const {
+    bindInput,
+    bindOptions,
+    bindOption,
+    isBusy,
+    suggestions,
+    selectedIndex,
+  } = useAutoComplete({
+    // onChange: (value: string) => console.log("value", value),
+    onChange: (value: User) => {
+      dispatch({
+        type: "CHANGE_ASSIGNEE",
+        payload: value.name,
+      });
+    },
+    source: (search: string) =>
+      users?.filter((user) => new RegExp(`^${search}`, "i").test(user.name)),
+  });
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -30,10 +53,22 @@ export default function TaskModal({
   };
 
   useEffect(() => {
+    const gUsers = async () => {
+      const users = await getUsers();
+
+      setUsers(users);
+    };
+
+    gUsers();
+  }, []);
+
+  useEffect(() => {
     if (task) {
       dispatch({ type: "SET_TASK", payload: task });
     }
   }, [task]);
+
+  console.log("modal");
 
   return (
     <dialog className={classes.dialogWrapper}>
@@ -86,6 +121,14 @@ export default function TaskModal({
                   type="text"
                   id="assignee"
                   name="asignee"
+                  {...bindInput}
+                  className={classes.input}
+                  placeholder="Enter assignee ..."
+                />
+                {/* <input
+                  type="text"
+                  id="assignee"
+                  name="asignee"
                   onChange={(e) =>
                     dispatch({
                       type: "CHANGE_ASSIGNEE",
@@ -95,7 +138,23 @@ export default function TaskModal({
                   value={state.assignee}
                   className={classes.input}
                   placeholder="Enter assignee ..."
-                />
+                /> */}
+                {suggestions.length > 0 && (
+                  <ul
+                    {...bindOptions}
+                    className=" absolute top-15 right-0 left-0 w-full scroll-smooth max-h-[260px] overflow-x-hidden overflow-y-auto border border-gray-300 text-xs  z-10 shadow-md bg-white rounded-md"
+                  >
+                    {suggestions.map((_, index) => (
+                      <li
+                        key={index}
+                        {...bindOption}
+                        className={`cursor-pointer hover:bg-indigo-400 hover:text-white px-3 py-2`}
+                      >
+                        <div className="">{suggestions[index].name}</div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div className={classes.formControl}>
                 <label htmlFor="dueDate" className={classes.label}>
@@ -118,12 +177,13 @@ export default function TaskModal({
                 />
               </div>
               <div className={classes.formControl}>
-                <label htmlFor="columnTitle" className={classes.label}>
+                <label htmlFor="priority" className={classes.label}>
                   Priority
                 </label>
                 <select
                   name="priority"
                   id="priority"
+                  value={state.priority}
                   className={classes.select}
                   onChange={(e) =>
                     dispatch({
@@ -150,7 +210,7 @@ export default function TaskModal({
                 /> */}
               </div>
               <div className={classes.formControl}>
-                <label htmlFor="columnTitle" className={classes.label}>
+                <label htmlFor="taskTags" className={classes.label}>
                   Tags (comma separated)
                 </label>
                 <input

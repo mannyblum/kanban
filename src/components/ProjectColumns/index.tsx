@@ -31,8 +31,6 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   const [isMenuOpen, setOpenMenu] = useState<boolean>(false);
   const [taskModalOpen, setTaskModalOpen] = useState<boolean>(false);
 
-  const portalRef = useRef<HTMLDivElement>(null);
-
   const [isEditing, setEditing] = useState<boolean>(false);
   const [isDeleting, setDeleting] = useState<boolean>(false);
 

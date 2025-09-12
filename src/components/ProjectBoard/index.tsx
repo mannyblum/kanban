@@ -16,9 +16,13 @@ import useConfirm from "../../hooks/useConfirm";
 
 import ColumnModal from "../Modals/ColumnModal";
 import { Column as ProjectColumn } from "../ProjectColumns";
+import UserModal from "../Modals/UserModal";
+import { addUser } from "../../../lib/users";
 
 export default function ProjectBoard() {
   const [showColumnModal, setShowColumnModal] = useState<boolean>(false);
+  const [showUserModal, setShowUserModal] = useState<boolean>(false);
+  const [showTagModal, setShowTagModal] = useState<boolean>(false);
   const [columns, setColumns] = useState<Column[]>([]);
 
   const [isEditing, setEditing] = useState<boolean>(false);
@@ -32,6 +36,14 @@ export default function ProjectBoard() {
 
   const handleShowColumnModal = () => {
     setShowColumnModal(true);
+  };
+
+  const handleShowUserModal = () => {
+    setShowUserModal(true);
+  };
+
+  const handleShowTagModal = () => {
+    setShowTagModal(true);
   };
 
   useEffect(() => {
@@ -149,9 +161,37 @@ export default function ProjectBoard() {
     setDeleting(false);
   };
 
-  const handleClose = () => {
+  const handleCloseColumnModal = () => {
     setShowColumnModal(false);
     setActiveColumn(null);
+  };
+
+  const handleCloseUserModal = () => {
+    setShowUserModal(false);
+  };
+
+  const handleAddUser = async (userName: string) => {
+    const newUser = {
+      id: new Date().getTime(),
+      name: userName,
+    };
+
+    const response = await addUser(newUser);
+
+    if (response) {
+      const noti: Notification = {
+        id: response.id,
+        message: `Successfully added ${response.name} to the Users list`,
+        severity: "info",
+      };
+
+      addNotification(noti);
+      setShowUserModal(false);
+    }
+  };
+
+  const handleEditUser = () => {
+    return;
   };
 
   if (columns.length === 0) return;
@@ -160,6 +200,23 @@ export default function ProjectBoard() {
     <section ref={portalRef}>
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl text-slate-900 font-semibold">Project Board</h2>
+        <div className="grow"></div>
+        <button
+          onClick={handleShowUserModal}
+          style={{ marginRight: 10 }}
+          className={classes.button}
+        >
+          <span>+</span>
+          <span>Add User</span>
+        </button>
+        <button
+          onClick={handleShowTagModal}
+          style={{ marginRight: 10 }}
+          className={classes.button}
+        >
+          <span>+</span>
+          <span>Add Tag</span>
+        </button>
         <button onClick={handleShowColumnModal} className={classes.button}>
           <span>+</span>
           <span>Add Column</span>
@@ -182,12 +239,33 @@ export default function ProjectBoard() {
         createPortal(
           <ColumnModal
             column={activeColumn}
-            onClose={handleClose}
+            onClose={handleCloseColumnModal}
             onAddColumn={handleAddColumn}
             onEditColumn={handleEditColumn}
           />,
           portalRef.current
         )}
+      {showUserModal &&
+        portalRef.current &&
+        createPortal(
+          <UserModal
+            onClose={handleCloseUserModal}
+            onAddUser={handleAddUser}
+            onEditUser={handleEditUser}
+          />,
+          portalRef.current
+        )}
+      {/* {showColumnModal &&
+        portalRef.current &&
+        createPortal(
+          <ColumnModal
+            column={activeColumn}
+            onClose={handleClose}
+            onAddColumn={handleAddColumn}
+            onEditColumn={handleEditColumn}
+          />,
+          portalRef.current
+        )} */}
       {isDeleting && <ConfirmDeleteDialog />}
     </section>
   );

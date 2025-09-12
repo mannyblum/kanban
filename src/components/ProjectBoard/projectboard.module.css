@@ -48,6 +48,7 @@
 .formControl {
   @apply flex flex-col;
   @apply mb-4;
+  @apply relative;
 }
 
 .label {
@@ -58,6 +59,7 @@
   @apply border border-gray-300 rounded-md mt-1.5 mb-2 px-3 py-2 shadow-xs text-xs;
   @apply focus-visible:ring-indigo-100/50 focus-visible:ring-[3px] focus-visible:border-indigo-300/50;
   @apply focus-visible:outline-indigo-300/50;
+  @apply relative;
 }
 
 .select {

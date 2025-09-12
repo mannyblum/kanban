@@ -1,5 +1,5 @@
 const DB_NAME = "kaosBanDB";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const Stores = {
   Columns: "columns",
