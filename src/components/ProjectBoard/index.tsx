@@ -18,6 +18,8 @@ import ColumnModal from "../Modals/ColumnModal";
 import { Column as ProjectColumn } from "../ProjectColumns";
 import UserModal from "../Modals/UserModal";
 import { addUser } from "../../../lib/users";
+import TagModal from "../Modals/TagModal";
+import { addTag } from "../../../lib/tags";
 
 export default function ProjectBoard() {
   const [showColumnModal, setShowColumnModal] = useState<boolean>(false);
@@ -170,6 +172,10 @@ export default function ProjectBoard() {
     setShowUserModal(false);
   };
 
+  const handleCloseTagModal = () => {
+    setShowTagModal(false);
+  };
+
   const handleAddUser = async (userName: string) => {
     const newUser = {
       id: new Date().getTime(),
@@ -191,6 +197,30 @@ export default function ProjectBoard() {
   };
 
   const handleEditUser = () => {
+    return;
+  };
+
+  const handleAddTag = async (tagName: string) => {
+    const newTag = {
+      id: new Date().getTime(),
+      name: tagName,
+    };
+
+    const response = await addTag(newTag);
+
+    if (response) {
+      const noti: Notification = {
+        id: response.id,
+        message: `Successfully added ${response.name} to the Tags list`,
+        severity: "info",
+      };
+
+      addNotification(noti);
+      setShowTagModal(false);
+    }
+  };
+
+  const handleEditTag = async () => {
     return;
   };
 
@@ -255,17 +285,16 @@ export default function ProjectBoard() {
           />,
           portalRef.current
         )}
-      {/* {showColumnModal &&
+      {showTagModal &&
         portalRef.current &&
         createPortal(
-          <ColumnModal
-            column={activeColumn}
-            onClose={handleClose}
-            onAddColumn={handleAddColumn}
-            onEditColumn={handleEditColumn}
+          <TagModal
+            onClose={handleCloseTagModal}
+            onAddTag={handleAddTag}
+            onEditTag={handleEditTag}
           />,
           portalRef.current
-        )} */}
+        )}
       {isDeleting && <ConfirmDeleteDialog />}
     </section>
   );

@@ -1,39 +1,39 @@
 import classes from "../../components/ProjectBoard/projectboard.module.css";
 
-import type { User } from "../../../lib/users";
+import type { Tag } from "../../../lib/tags";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 
-interface UserModalProps {
+interface TagsModalProps {
   onClose: () => void;
-  onAddUser: (userName: string) => void;
-  onEditUser: (user: User) => void;
-  user?: User | null;
+  onAddTag: (tagName: string) => void;
+  onEditTag: (tag: Tag) => void;
+  tag?: Tag | null;
 }
 
 export default function UserModal({
-  onAddUser,
-  onEditUser,
-  user,
+  onAddTag,
+  onEditTag,
+  tag,
   onClose,
-}: UserModalProps) {
-  const [userName, setUserName] = useState<string>("");
+}: TagsModalProps) {
+  const [tagName, setTagName] = useState<string>("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setUserName(event.target?.value);
+    setTagName(event.target?.value);
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (user) {
-      const newUser: User = {
-        ...user,
-        name: userName,
+    if (tag) {
+      const newTag: Tag = {
+        ...tag,
+        name: tagName,
       };
 
-      onEditUser(newUser);
+      onEditTag(newTag);
     } else {
-      onAddUser(userName);
+      onAddTag(tagName);
     }
   };
   return (
@@ -43,22 +43,22 @@ export default function UserModal({
         <div className={classes.dialogPanel}>
           <div className={classes.dialogPanelContent}>
             <h3 className={classes.dialogTitle}>
-              {user ? "Edit" : "Add New"} User
+              {tag ? "Edit" : "Add New"} Tag
             </h3>
             <form onSubmit={onSubmit}>
               <div className={classes.formControl}>
-                <label htmlFor="columnTitle" className={classes.label}>
-                  User Name
+                <label htmlFor="tagName" className={classes.label}>
+                  Tag Name
                 </label>
                 <input
                   autoFocus
                   type="text"
-                  id="userName"
-                  name="userName"
+                  id="tagName"
+                  name="tagName"
                   onChange={handleChange}
-                  value={userName}
+                  value={tagName}
                   className={classes.input}
-                  placeholder="Enter User"
+                  placeholder="Enter Tag"
                 />
               </div>
               <div className={classes.dialogFooter}>
@@ -70,11 +70,11 @@ export default function UserModal({
                   Cancel
                 </button>
                 <button
-                  disabled={userName.length === 0}
+                  disabled={tagName.length === 0}
                   type="submit"
                   className={classes.primary}
                 >
-                  {user ? "Edit" : "Add"} User
+                  {tag ? "Edit" : "Add"} Tag
                 </button>
               </div>
             </form>
