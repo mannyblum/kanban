@@ -1,4 +1,6 @@
+import type { MultiValue } from "react-select";
 import type { Task as FormState, Task } from "../../lib/columns";
+import type { Tag } from "../../lib/tags";
 
 type FormAction =
   | { type: "CHANGE_TITLE"; payload: string }
@@ -6,7 +8,7 @@ type FormAction =
   | { type: "CHANGE_ASSIGNEE"; payload: string }
   | { type: "CHANGE_DUEDATE"; payload: string }
   | { type: "CHANGE_PRIORITY"; payload: string }
-  | { type: "CHANGE_TAGS"; payload: string }
+  | { type: "CHANGE_TAGS"; payload: MultiValue<Tag> }
   | { type: "SET_TASK"; payload: Task }
   | { type: "RESET_FORM" };
 
@@ -18,7 +20,7 @@ export const initialFormState: FormState = {
   assignee: "",
   // dueDate: new Date(),
   dueDate: "",
-  tags: "",
+  tags: [],
   priority: "Low",
 };
 
@@ -38,6 +40,7 @@ export const formReducer = (
     case "CHANGE_PRIORITY":
       return { ...state, priority: action.payload };
     case "CHANGE_TAGS":
+      console.log("action.payload", action.payload);
       return { ...state, tags: action.payload };
     case "SET_TASK":
       return { ...action.payload };

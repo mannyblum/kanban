@@ -1,4 +1,6 @@
+import type { MultiValue } from "react-select";
 import { initDB, Stores } from "./db";
+import type { Tag } from "./tags";
 export interface Column {
   id: number;
   title: string;
@@ -15,7 +17,7 @@ export interface Task {
   // priority: "High" | "Medium" | "Low";
   dueDate: string;
   priority: string;
-  tags?: string[] | string;
+  tags?: MultiValue<Tag>;
   order?: number;
 }
 

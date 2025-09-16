@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent, type MouseEvent } from "react";
 import type { User } from "../../lib/users";
 
 export default function useAutoComplete({ delay = 500, source, onChange }) {
-  const listRef = useRef(null);
+  const listRef = useRef<HTMLUListElement | null>(null);
 
   const [_timeout, _setTimeout] = useState(setTimeout(() => {}, 0));
   const [suggestions, setSuggestions] = useState<User[]>([]);
@@ -53,8 +53,11 @@ export default function useAutoComplete({ delay = 500, source, onChange }) {
     bindOption: {
       onClick: (e: MouseEvent<HTMLLIElement>) => {
         const target = e.target as HTMLElement;
-        const nodes = Array.from(listRef.current?.children);
-        selectOption(nodes.indexOf(target.closest("li")));
+        const nodes = Array.from(listRef.current?.children ?? []);
+        const li = target.closest("li");
+        if (li) {
+          selectOption(nodes.indexOf(li));
+        }
       },
     },
     bindInput: {

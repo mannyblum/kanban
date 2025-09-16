@@ -215,7 +215,10 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
       </div>
       <div className="">
         <button
-          onClick={openTaskModal}
+          onClick={() => {
+            setActiveTask(null);
+            openTaskModal();
+          }}
           className="bg-transparent hover:bg-white cursor-pointer border-dotted border-2 w-full py-2 rounded-md mt-4 text-sm border-slate-300 hover:border-slate-500 text-slate-500 flex justify-center items-center"
         >
           + Add Task

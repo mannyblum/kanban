@@ -1,10 +1,12 @@
 import { useEffect, useReducer, useState, type FormEvent } from "react";
+import Select from "react-select";
 import type { Task } from "../../../lib/columns";
 
 import classes from "../../components/ProjectBoard/projectboard.module.css";
 import { formReducer, initialFormState } from "../../reducers/formReducer";
 import { getUsers, type User } from "../../../lib/users";
 import useAutoComplete from "../../hooks/useAutoComplete";
+import { getTags, type Tag } from "../../../lib/tags";
 
 interface TaskModalProps {
   onClose: () => void;
@@ -22,6 +24,7 @@ export default function TaskModal({
   const [state, dispatch] = useReducer(formReducer, initialFormState);
 
   const [users, setUsers] = useState<User[] | null>(null);
+  const [tags, setTags] = useState<Tag[] | null>(null);
 
   const {
     bindInput,
@@ -60,6 +63,16 @@ export default function TaskModal({
     };
 
     gUsers();
+  }, []);
+
+  useEffect(() => {
+    const gTags = async () => {
+      const tags = await getTags();
+
+      setTags(tags);
+    };
+
+    gTags();
   }, []);
 
   useEffect(() => {
@@ -125,20 +138,6 @@ export default function TaskModal({
                   className={classes.input}
                   placeholder="Enter assignee ..."
                 />
-                {/* <input
-                  type="text"
-                  id="assignee"
-                  name="asignee"
-                  onChange={(e) =>
-                    dispatch({
-                      type: "CHANGE_ASSIGNEE",
-                      payload: e.target.value,
-                    })
-                  }
-                  value={state.assignee}
-                  className={classes.input}
-                  placeholder="Enter assignee ..."
-                /> */}
                 {suggestions.length > 0 && (
                   <ul
                     {...bindOptions}
@@ -197,32 +196,38 @@ export default function TaskModal({
                   <option value="medium">Medium</option>
                   <option value="high">High</option>
                 </select>
-                {/* <input
-                  type="text"
-                  id="taskPriority"
-                  name="taskPriority"
-                  onChange={(e) =>
-                    dispatch({ type: "CHANGE_TITLE", payload: e.target.value })
-                  }
-                  value={state.title}
-                  className={classes.input}
-                  placeholder="Priority ..."
-                /> */}
               </div>
               <div className={classes.formControl}>
                 <label htmlFor="taskTags" className={classes.label}>
                   Tags (comma separated)
                 </label>
-                <input
-                  type="text"
-                  id="taskTags"
-                  name="taskTags"
-                  onChange={(e) =>
-                    dispatch({ type: "CHANGE_TAGS", payload: e.target.value })
-                  }
+                <Select
+                  options={tags!}
+                  isMulti
+                  name="tags"
+                  id="tags"
                   value={state.tags}
-                  className={classes.input}
-                  placeholder="Enter tags..."
+                  onChange={(option) =>
+                    dispatch({ type: "CHANGE_TAGS", payload: option })
+                  }
+                  styles={{
+                    control: (baseStyles) => ({
+                      ...baseStyles,
+                      borderColor: "var(--color-gray-300)",
+                    }),
+                    placeholder: (baseStyles) => ({
+                      ...baseStyles,
+                      fontSize: "var(--text-xs)",
+                      color: "var(--color-gray-500)",
+                    }),
+                    option: (baseStyles) => ({
+                      ...baseStyles,
+                      fontSize: "var(--text-xs)",
+                      color: "var(--color-gray-500)",
+                    }),
+                  }}
+                  getOptionLabel={(option) => option.name}
+                  getOptionValue={(option) => option.id.toString()}
                 />
               </div>
               <div className={classes.dialogFooter}>
