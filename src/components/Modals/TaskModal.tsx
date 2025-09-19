@@ -30,9 +30,9 @@ export default function TaskModal({
     bindInput,
     bindOptions,
     bindOption,
-    isBusy,
+    // isBusy,
     suggestions,
-    selectedIndex,
+    // selectedIndex,
   } = useAutoComplete({
     onChange: (value: User) => {
       dispatch({
