@@ -41,7 +41,8 @@ export default function TaskModal({
       });
     },
     source: (search: string) =>
-      users?.filter((user) => new RegExp(`^${search}`, "i").test(user.name)),
+      users?.filter((user) => new RegExp(`^${search}`, "i").test(user.name)) ??
+      [],
   });
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {

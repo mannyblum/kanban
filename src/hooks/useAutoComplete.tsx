@@ -1,7 +1,17 @@
 import { useRef, useState, type ChangeEvent, type MouseEvent } from "react";
 import type { User } from "../../lib/users";
 
-export default function useAutoComplete({ delay = 500, source, onChange }) {
+type AutoCompleteProps = {
+  delay?: number;
+  source: (term: string) => void;
+  onChange: (user: User) => void;
+};
+
+export default function useAutoComplete({
+  delay = 500,
+  source,
+  onChange,
+}: AutoCompleteProps) {
   const listRef = useRef<HTMLUListElement | null>(null);
 
   const [_timeout, _setTimeout] = useState(setTimeout(() => {}, 0));
@@ -30,7 +40,7 @@ export default function useAutoComplete({ delay = 500, source, onChange }) {
   async function getSuggestions(term: string) {
     if (term && source) {
       const options = await source(term);
-      setSuggestions(options);
+      setSuggestions(options ?? []);
     }
   }
 
