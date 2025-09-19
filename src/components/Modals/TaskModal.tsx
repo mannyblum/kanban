@@ -34,7 +34,6 @@ export default function TaskModal({
     suggestions,
     selectedIndex,
   } = useAutoComplete({
-    // onChange: (value: string) => console.log("value", value),
     onChange: (value: User) => {
       dispatch({
         type: "CHANGE_ASSIGNEE",
@@ -81,7 +80,9 @@ export default function TaskModal({
     }
   }, [task]);
 
-  console.log("modal");
+  const today = new Date();
+
+  const todayFormatted = today.toISOString().split("T")[0];
 
   return (
     <dialog className={classes.dialogWrapper}>
@@ -170,8 +171,7 @@ export default function TaskModal({
                     })
                   }
                   value={state.dueDate}
-                  // implement min value
-                  // min=""
+                  min={todayFormatted.replace(/\//g, "-")}
                   className={classes.input}
                 />
               </div>

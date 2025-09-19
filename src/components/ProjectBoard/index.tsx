@@ -77,6 +77,7 @@ export default function ProjectBoard() {
       setColumns([...columns, newColumn]);
 
       addNotification(noti);
+      setActiveColumn(null);
       setShowColumnModal(false);
     }
   };
@@ -224,8 +225,6 @@ export default function ProjectBoard() {
     return;
   };
 
-  if (columns.length === 0) return;
-
   return (
     <section ref={portalRef}>
       <div className="flex justify-between items-center mb-8">
@@ -249,21 +248,38 @@ export default function ProjectBoard() {
         </button>
         <button onClick={handleShowColumnModal} className={classes.button}>
           <span>+</span>
-          <span>Add Column</span>
+          <span>Add Board</span>
         </button>
       </div>
-      <div className="grid grid-cols-4 gap-4">
-        {columns.map((column) => {
-          return (
-            <ProjectColumn
-              key={column.id}
-              column={column}
-              onEdit={editColumn}
-              onDelete={removeColumn}
-            />
-          );
-        })}
-      </div>
+      {columns.length > 0 ? (
+        <div className="grid grid-cols-4 gap-4">
+          {columns.map((column) => {
+            return (
+              <ProjectColumn
+                key={column.id}
+                column={column}
+                onEdit={editColumn}
+                onDelete={removeColumn}
+                // onAddUsers={handleShowUserModal}
+                // onAddTags={handleShowTagModal}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          <p>
+            There are currently no boards on this project, Start your project
+            below.
+            <br />
+            <br />
+            <button onClick={handleShowColumnModal} className={classes.button}>
+              <span>+</span>
+              <span>Add Board</span>
+            </button>
+          </p>
+        </div>
+      )}
       {showColumnModal &&
         portalRef.current &&
         createPortal(

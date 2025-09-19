@@ -18,6 +18,8 @@ import type { Notification } from "../../context/notifications";
 import ProjectCard from "../ProjectCards";
 import useConfirm from "../../hooks/useConfirm";
 import { createPortal } from "react-dom";
+import { getTags, type Tag } from "../../../lib/tags";
+import { getUsers, type User } from "../../../lib/users";
 
 interface ColumnPropsPlus {
   column: ColumnProps;
@@ -27,6 +29,8 @@ interface ColumnPropsPlus {
 
 const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [isMenuOpen, setOpenMenu] = useState<boolean>(false);
   const [taskModalOpen, setTaskModalOpen] = useState<boolean>(false);
@@ -46,8 +50,20 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
 
       setTasks(tasks);
     };
+    const gUsers = async () => {
+      const users = await getUsers();
+
+      setUsers(users);
+    };
+    const gTags = async () => {
+      const tags = await getTags();
+
+      setTags(tags);
+    };
 
     gTasks();
+    gUsers();
+    gTags();
   }, []);
 
   const openTaskModal = () => {
@@ -212,6 +228,23 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
               key={task.id}
             />
           ))}
+        {users && users.length === 0 && (
+          <div className="text-sm bg-yellow-400 border-yellow-700/50 text-yellow-900 py-2 px-4 rounded-lg mb-4 shadow-slate-800 border-2">
+            There are no users in this project. Start by adding some users.
+          </div>
+        )}
+        {tags && tags.length === 0 && (
+          <div className="text-sm bg-yellow-400 border-yellow-700/50 text-yellow-900 py-2 px-4 rounded-lg mb-4 shadow-slate-800 border-2">
+            There are no tags in this project. Start by adding some tags.
+          </div>
+        )}
+        {(users && users.length === 0) ||
+          (tags && tags.length === 0) ||
+          (tasks && tasks.length === 0 && (
+            <div className="text-sm bg-yellow-400 border-yellow-700/50 text-yellow-900 py-2 px-4 rounded-lg mb-4 shadow-slate-800 border-2">
+              There are no tasks on this board. Start by adding a task below.
+            </div>
+          ))}
       </div>
       <div className="">
         <button
@@ -219,7 +252,10 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
             setActiveTask(null);
             openTaskModal();
           }}
-          className="bg-transparent hover:bg-white cursor-pointer border-dotted border-2 w-full py-2 rounded-md mt-4 text-sm border-slate-300 hover:border-slate-500 text-slate-500 flex justify-center items-center"
+          disabled={
+            (users && users.length === 0) || (tags && tags.length === 0)
+          }
+          className="bg-transparent hover:bg-white disabled:bg-gray-500 disabled:text-gray-400 disabled:hover:bg-gray-500 cursor-pointer disabled:cursor-not-allowed border-dotted disabled:border-solid border-2 w-full py-2 rounded-md mt-4 text-sm border-slate-300 hover:border-slate-500 text-slate-500 flex justify-center items-center"
         >
           + Add Task
         </button>

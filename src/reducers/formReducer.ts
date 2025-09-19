@@ -40,7 +40,6 @@ export const formReducer = (
     case "CHANGE_PRIORITY":
       return { ...state, priority: action.payload };
     case "CHANGE_TAGS":
-      console.log("action.payload", action.payload);
       return { ...state, tags: action.payload };
     case "SET_TASK":
       return { ...action.payload };

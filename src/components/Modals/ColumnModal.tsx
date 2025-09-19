@@ -51,12 +51,12 @@ export default function ColumnModal({
         <div className={classes.dialogPanel}>
           <div className={classes.dialogPanelContent}>
             <h3 className={classes.dialogTitle}>
-              {column ? "Edit" : "Add New"} Column
+              {column ? "Edit" : "Add New"} Board
             </h3>
             <form onSubmit={onSubmit}>
               <div className={classes.formControl}>
                 <label htmlFor="columnTitle" className={classes.label}>
-                  Column Title
+                  Board Title
                 </label>
                 <input
                   autoFocus
@@ -66,7 +66,7 @@ export default function ColumnModal({
                   onChange={handleChange}
                   value={columnName}
                   className={classes.input}
-                  placeholder="Enter column title..."
+                  placeholder="Enter Board title..."
                 />
               </div>
               <div className={classes.dialogFooter}>
@@ -78,7 +78,7 @@ export default function ColumnModal({
                   Cancel
                 </button>
                 <button type="submit" className={classes.primary}>
-                  {column ? "Edit" : "Add"} Column
+                  {column ? "Edit" : "Add"} Board
                 </button>
               </div>
             </form>
