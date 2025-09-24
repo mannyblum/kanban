@@ -43,9 +43,17 @@ export default memo(function ProjectCard({
           </button>
         </div>
       </div>
-      <p className="font-light tex-sm text-slate-600 mb-8">
+      <p className="font-light !text-sm text-slate-600 mb-8">
         {task.description}
       </p>
+      {task.tags &&
+        task.tags.map((tag) => (
+          <ul className="mb-4">
+            <li className="rounded-sm bg-indigo-500 text-white text-xs inline px-2 py-1">
+              {tag.name}
+            </li>
+          </ul>
+        ))}
       <div className="text-xs  text-slate-500 flex flex-row items-center justify-around">
         {task.assignee && (
           <div className="flex flex-row justify-center items-center">

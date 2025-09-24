@@ -48,8 +48,13 @@ export default function TaskModal({
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (task) {
-      onEditTask(task);
+    const updatedTask = {
+      ...task,
+      ...state,
+    };
+
+    if (task && updatedTask) {
+      onEditTask(updatedTask);
     } else {
       onAddTask(state);
     }

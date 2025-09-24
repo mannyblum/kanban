@@ -45,26 +45,25 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
   useOnClickOutside(ref, () => setOpenMenu(false));
 
   useEffect(() => {
-    const gTasks = async () => {
-      const tasks = await getTasksByColumnId(column.id);
-
-      setTasks(tasks);
-    };
-    const gUsers = async () => {
-      const users = await getUsers();
-
-      setUsers(users);
-    };
-    const gTags = async () => {
-      const tags = await getTags();
-
-      setTags(tags);
-    };
-
     gTasks();
     gUsers();
     gTags();
   }, []);
+
+  const gTasks = async () => {
+    const tasks = await getTasksByColumnId(column.id);
+    setTasks(tasks);
+  };
+  const gUsers = async () => {
+    const users = await getUsers();
+
+    setUsers(users);
+  };
+  const gTags = async () => {
+    const tags = await getTags();
+
+    setTags(tags);
+  };
 
   const openTaskModal = () => {
     setTaskModalOpen(true);
@@ -166,6 +165,7 @@ const Column = memo(({ column, onEdit, onDelete }: ColumnPropsPlus) => {
       addNotification(noti);
       closeTaskModal();
       setEditing(false);
+      gTasks();
     }
   };
 

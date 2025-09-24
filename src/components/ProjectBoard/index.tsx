@@ -252,7 +252,7 @@ export default function ProjectBoard() {
         </button>
       </div>
       {columns.length > 0 ? (
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 md:grid-cols-3 gap-4">
           {columns.map((column) => {
             return (
               <ProjectColumn

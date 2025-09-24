@@ -2,7 +2,7 @@ import ProjectBoard from "./components/ProjectBoard";
 
 function App() {
   return (
-    <div className="container mx-auto my-10">
+    <div className="container mx-auto p-10 bg-slate-100">
       <div className="mb-8">
         <h1 className="text-4xl text-indigo-700 font-semibold mb-2">
           KaosBan KanBan
